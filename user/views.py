@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.http import HttpResponse,HttpResponseBadRequest
+from django.http import HttpResponse,HttpResponseRedirect
 from user.models import MyUser
 from student.models import Student
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login as authlogin
+from django.urls import reverse
 
 
 def home(request):
@@ -17,12 +20,18 @@ def login(request):
     else:
         email = request.POST.get('email')
         password = request.POST.get('password')
-        is_user_exist = MyUser.objects.all().filter(email=email, password=password)
-        if is_user_exist:
-            context = {'username': is_user_exist[0].username}
-            return render(request, 'user/home.html', context)
-        else:
-            return HttpResponseBadRequest("Sorry, your credentials is in correct")
+        try:
+            user = MyUser.objects.get(email=email, password=password)
+            admin_user = authenticate(username=user.username, password=password)
+            if user and admin_user is not None:
+                request.session['username'] = user.username
+                authlogin(request, admin_user)
+                return redirect('home')
+        except MyUser.DoesNotExist:
+            error_msg = "Your credentials is not correct"
+            context = {'error': error_msg}
+            return redirect("/login/", context)
+
 
 
 def register(request):
@@ -33,6 +42,14 @@ def register(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         MyUser.objects.create(username=username, email=email, password=password)
+        User.objects.create_user(username, email, password, is_staff=True)
         return redirect("login")
     else:
         return HttpResponse("Unsupported request method")
+
+
+def logout(request):
+    request.session.clear()
+    return redirect("login")
+
+

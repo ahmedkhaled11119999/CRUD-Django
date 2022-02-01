@@ -1,8 +1,8 @@
 {%extends "parent.html"%}
 {%block content%}
 
-<h1 class="text-center">Welcome {{username}} to Home Page</h1>
-
+<h1 class="text-center">Welcome {{request.session.username}} to Home Page</h1>
+{%if request.session.username%}
 <form method="post" action="{%url 'create_student'%}" class="w-50 mx-auto my-5">
         {%csrf_token%}
          <div class="mb-3">
@@ -72,5 +72,5 @@
 </tr>
 {% endfor %}
 </table>
-
+{%endif%}
 {%endblock%}
