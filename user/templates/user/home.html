@@ -3,4 +3,74 @@
 
 <h1 class="text-center">Welcome {{username}} to Home Page</h1>
 
+<form method="post" action="{%url 'create_student'%}" class="w-50 mx-auto my-5">
+        {%csrf_token%}
+         <div class="mb-3">
+        <label for="student_name" class="form-label">User name</label>
+        <input type="text" class="form-control" id="student_name" aria-describedby="username-help" name="student_name">
+        </div>
+         <button type="submit" class="btn btn-primary">Create Student</button>
+    </form>
+
+<table class="table w-50 mx-auto">
+<tr>
+  <th>Id</th>
+  <th>Name</th>
+  <th>Delete</th>
+  <th>Update</th>
+</tr>
+{% for student in students %}
+<tr>
+  <td> {{ student.id }}</td>
+  <td> {{ student.name }}</td>
+  <td><a class="btn btn-danger" href="{%url 'delete_student' student.id%}">Delete Student</a></td>
+    <td>
+        <form method="post" action="{%url 'update_student' student.id%}">
+        {%csrf_token%}
+         <div class="mb-3">
+        <label for="student_name_update" class="form-label">User name</label>
+        <input type="text" class="form-control" id="student_name_update" aria-describedby="username-help" name="student_name">
+        </div>
+         <button type="submit" class="btn btn-warning">Update Student</button>
+    </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+
+<form method="get" action="{%url 'select_student'%}" class="w-50 mx-auto my-5">
+         <div class="mb-3">
+        <label for="student_name_2" class="form-label">Student Name</label>
+        <input type="text" class="form-control" id="student_name_2" aria-describedby="username-help" name="student_name">
+        </div>
+         <button type="submit" class="btn btn-primary">Find Student</button>
+    </form>
+
+<table class="table w-50 mx-auto">
+<tr>
+  <th>Id</th>
+  <th>Name</th>
+  <th>Delete</th>
+  <th>Update</th>
+</tr>
+{% for s_student in selected_students %}
+<tr>
+  <td> {{ s_student.id }}</td>
+  <td> {{ s_student.name }}</td>
+  <td><a class="btn btn-danger" href="{%url 'delete_student' s_student.id%}">Delete Student</a></td>
+    <td>
+        <form method="post" action="{%url 'update_student' s_student.id%}">
+        {%csrf_token%}
+         <div class="mb-3">
+        <label for="student_name_update_2" class="form-label">User name</label>
+        <input type="text" class="form-control" id="student_name_update_2" aria-describedby="username-help" name="student_name">
+        </div>
+         <button type="submit" class="btn btn-warning">Update Student</button>
+    </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
 {%endblock%}

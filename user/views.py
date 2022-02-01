@@ -2,10 +2,13 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponse,HttpResponseBadRequest
 from user.models import MyUser
+from student.models import Student
 
 
 def home(request):
-    return render(request, "user/home.html")
+    students = Student.objects.all()
+    context = {'students': students}
+    return render(request, 'user/home.html', context)
 
 
 def login(request):
