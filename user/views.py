@@ -1,17 +1,22 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse
 from user.models import MyUser
 from student.models import Student
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as authlogin
-from django.urls import reverse
+from student.forms import *
 
 
 def home(request):
-    students = Student.objects.all()
-    context = {'students': students}
-    return render(request, 'user/home.html', context)
+    if request.method == 'GET':
+        students = Student.objects.all()
+        # create_form = AddStudentForm()
+        create_form = AddStudentModelForm()
+        # update_form = AddStudentForm()
+        update_form = AddStudentModelForm()
+        context = {'students': students, 'create_form': create_form, 'update_form': update_form}
+        return render(request, 'user/home.html', context)
 
 
 def login(request):
@@ -30,7 +35,7 @@ def login(request):
         except MyUser.DoesNotExist:
             error_msg = "Your credentials is not correct"
             context = {'error': error_msg}
-            return redirect("/login/", context)
+            return render(request, "user/login.html", context)
 
 
 

@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from user.views import *
 from student.views import *
+from trainee.views import *
+# app_name = "user"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,8 +27,10 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('delete-student/<id>/', delete_student, name="delete_student"),
     path('create-student/', create_student, name='create_student'),
-    path('update-student/<id>/', update_student, name='update_student'),
+    # path('update-student/<id>/', update_student, name='update_student'),
+    path('update-student/<id>/', UpdateStudent.as_view(), name='update_student'),
     path('select-student/', select_student, name='select_student'),
-    path('logout/', logout, name='logout')
+    path('logout/', logout, name='logout'),
+    path('create-trainee', CreateTrainee.as_view(), name='create-trainee')
 
 ]

@@ -1,0 +1,10 @@
+{%extends "parent.html"%}
+{%block content%}
+<form method="post" action="{%url 'create-trainee'%}">
+        {%csrf_token%}
+         <div class="mb-3">
+        {{form.as_p}}
+        </div>
+         <button type="submit" class="btn btn-warning">Create Trainee</button>
+</form>
+{%endblock%}

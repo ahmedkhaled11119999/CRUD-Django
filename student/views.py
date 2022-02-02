@@ -1,23 +1,57 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import redirect
+from django.http import Http404
 from student.models import Student
-from django.http import Http404,HttpResponseRedirect
-
+from student.forms import AddStudentForm,AddStudentModelForm
+from django.views import View
 
 def delete_student(request, id):
     record = Student.objects.get(id=id)
     if record:
         record.delete()
+        if request.session.get('selected_students'):
+            request.session.pop('selected_students')
+        #     for record in request.session['selected_students']:
+        #         print(record['id'],type(record['id']))
+        #         print(id, type(id))
+        #         if str(record['id']) == id:
+        #             request.session['selected_students'].pop(record)
+        #             # print(request.session['selected_students'])
         return redirect('home')
     else:
-        return Http404('No student was found matching to the given id!')
+        raise Http404('No student was found matching to the given id!')
 
 
 def create_student(request):
     if request.method == 'POST':
-        name = request.POST.get('student_name')
-        Student.objects.create(name=name)
+        # form = AddStudentForm(request.POST)
+        form = AddStudentModelForm(request.POST)
+        if form.is_valid():
+            # Student.objects.create(name=request.POST['name'])
+            form.save()
+            if request.session.get('selected_students'):
+                request.session.pop('selected_students')
+            return redirect('home')
+        else:
+            raise Http404("Error Occurred")
 
-    return redirect('home')
+
+class UpdateStudent(View):
+    def get(self, request):
+        pass
+
+    def post(self, request, id):
+        # form = AddStudentForm(request.POST)
+        form = AddStudentModelForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            record = Student.objects.get(id=id)
+            record.name = name
+            record.save()
+            if request.session.get('selected_students'):
+                request.session.pop('selected_students')
+            return redirect('home')
+        else:
+            raise Http404("Problem with form")
 
 
 def update_student(request, id):
@@ -29,18 +63,19 @@ def update_student(request, id):
             record.name = name
             print(record.name, "2nd")
             record.save()
+            if request.session.get('selected_students'):
+                request.session.pop('selected_students')
             return redirect('home')
         else:
-            return Http404('No student was found matching to the given id!')
+            raise Http404('No student was found matching to the given id!')
 
 
 def select_student(request):
     if request.method == 'GET':
         name = request.GET.get('student_name')
-        records = Student.objects.all().filter(name=name)
+        records = Student.objects.filter(name=name)
         if records:
-            students = Student.objects.all()
-            context = {'selected_students': records, 'students': students}
-            return render(request, 'user/home.html', context)
+            request.session['selected_students'] = list(records.values())
+            return redirect('home')
         else:
-            return Http404('No student was found matching to the given id!')
+            raise Http404('No student was found matching to the given id!')
